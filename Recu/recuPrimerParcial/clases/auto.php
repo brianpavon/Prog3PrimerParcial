@@ -31,9 +31,13 @@ class Auto extends ManejadorArchivo
 
     public function __toString()
     {
-        return $this->_patente . '*' . $this->_fecha_ingreso . '*' . $this->_tipoEstadia.'*'.$this->_mailUsuario;
+        return $this->_patente . '*' . $this->_fecha_ingreso . '*' . $this->_tipoEstadia.'*'.$this->_mailUsuario.'*'.$this->_fecha_egreso;
     }
 
+    public static function MostrarAuto($auto)
+    {
+        echo 'Patente: '.$auto->_patente.' Fecha de ingreso: '.$auto->_fecha_ingreso.' Fecha Egreso: '.$auto->_fecha_egreso.PHP_EOL;
+    }
     
 
     public static function LeerAutoJSON()
@@ -41,7 +45,8 @@ class Auto extends ManejadorArchivo
         $autos = parent::LeerJSON(AUTOJSON);
         $listaAutos = array();
 
-        foreach ($autos as $auto) {
+        foreach ($autos as $auto) 
+        {
             $autoNuevo = new Auto($auto->_patente, $auto->_fecha_ingreso, $auto->_tipoEstadia,$auto->_mailUsuario);
             array_push($listaAutos, $autoNuevo);
         }
@@ -79,10 +84,14 @@ class Auto extends ManejadorArchivo
            if($auto->_patente == $patente)
            {
                $auto->_fecha_egreso = date('D:H:i');
-               var_dump($auto);
-               $horas = self::CalcularHoras($auto);
-               //var_dump($horas);
-               Precio::CalcularPrecio($auto->_tipoEstadia,$horas);               
+               //var_dump($auto->__toString());
+               Auto::MostrarAuto($auto);
+               if($auto->_tipoEstadia == 'hora')
+               {
+                $horas = self::CalcularHoras($auto);
+                //var_dump($horas);
+                Precio::CalcularPrecio($auto->_tipoEstadia,$horas);
+               }                             
                break;
            }
        }
@@ -90,8 +99,6 @@ class Auto extends ManejadorArchivo
 
    public static function CalcularHoras($auto)
    {
-
-       
        $horaIngreso = explode(':',$auto->_fecha_ingreso);
        $horaSalida = explode(':',$auto->_fecha_egreso);
        
